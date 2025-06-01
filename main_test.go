@@ -1,137 +1,107 @@
 package main
 
 import (
+    "context"
     "net/http"
     "net/http/httptest"
     "testing"
-    "github.com/stretchr/testify/assert"
-	"strings"
+    "log"
     "github.com/gin-gonic/gin"
+    "os"
+    "github.com/joho/godotenv"
+    "github.com/jackc/pgx/v5"
+    "github.com/stretchr/testify/assert"
+    "example/web-service-gin/handlers"
 )
 
-func TestGetSubjects(t *testing.T) {
-    router := setupRouter()
-    
-    req, _ := http.NewRequest("GET", "/subjects", nil)
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusOK, w.Code)
-    // Aquí podrías añadir más assertions sobre el cuerpo de la respuesta
+var testDBConnString string
+
+func TestMain(m *testing.M) {
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error cargando .env en los tests")
+    }
+
+    testDBConnString = os.Getenv("DATABASE_URL")
+    if testDBConnString == "" {
+        log.Fatal("DATABASE_URL no está definido en el entorno")
+    }
+    // Ejecutar los tests
+    code := m.Run()
+    os.Exit(code)
 }
 
-func TestGetSubjectByID(t *testing.T) {
-    router := setupRouter()
-    
-    // Test caso existente
-    req, _ := http.NewRequest("GET", "/subjects/1", nil)
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusOK, w.Code)
-    
-    // Test caso no existente
-    req, _ = http.NewRequest("GET", "/subjects/999", nil)
-    w = httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusNotFound, w.Code)
+func getTestDB() *pgx.Conn {
+    conn, err := pgx.Connect(context.Background(), testDBConnString)
+    if err != nil {
+        panic("No se pudo conectar a la base de datos: " + err.Error())
+    }
+    return conn
 }
 
-func TestPostSubjects(t *testing.T) {
-    router := setupRouter()
-    
-    // Crear un nuevo subject de prueba
-    newSubject := `{
-        "id": "10",
-        "name": "Nueva Materia",
-        "year": 3,
-        "anual": false,
-        "semester": 1
-    }`
-    
-    req, _ := http.NewRequest("POST", "/subjects", strings.NewReader(newSubject))
-    req.Header.Set("Content-Type", "application/json")
-    
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusCreated, w.Code)
-    
-    // Verificar que se añadió
-    req, _ = http.NewRequest("GET", "/subjects/10", nil)
-    w = httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestGetSProfessors(t *testing.T) {
-    router := setupRouter()
-    
-    req, _ := http.NewRequest("GET", "/professors", nil)
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusOK, w.Code)
-    // Aquí podrías añadir más assertions sobre el cuerpo de la respuesta
-}
-
-func TestGetProfessorByID(t *testing.T) {
-    router := setupRouter()
-    
-    // Test caso existente
-    req, _ := http.NewRequest("GET", "/professors/1", nil)
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusOK, w.Code)
-    
-    // Test caso no existente
-    req, _ = http.NewRequest("GET", "/professors/999", nil)
-    w = httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusNotFound, w.Code)
-}
-
-func TestPostProfessors(t *testing.T) {
-    router := setupRouter()
-    
-    // Crear un nuevo subject de prueba
-    newSubject := `{
-        "id": "10",
-        "name": "Nuevo Profesor",
-        "email": "profesor10@gmail.com",
-        "phone": "1234567890"
-    }`
-    
-    req, _ := http.NewRequest("POST", "/professors", strings.NewReader(newSubject))
-    req.Header.Set("Content-Type", "application/json")
-    
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusCreated, w.Code)
-    
-    // Verificar que se añadió
-    req, _ = http.NewRequest("GET", "/professors/10", nil)
-    w = httptest.NewRecorder()
-    router.ServeHTTP(w, req)
-    
-    assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func setupRouter() *gin.Engine {
+func setupRouter(db *pgx.Conn) *gin.Engine {
     router := gin.Default()
-    router.GET("/subjects", getSubjects)
-    router.GET("/subjects/:id", getSubjectByID)
-    router.POST("/subjects", postSubjects)
-    router.GET("/professors", getProfessors)
-    router.GET("/professors/:id", getProfessorByID)
-    router.POST("/professors", postProfessors)
+    router.GET("/subjects", handlers.GetAllSubjects(db))
+    router.GET("/subjects/:id", handlers.GetSubjectByID(db))
+    router.GET("/professors", handlers.GetAllProfessors(db))
+    router.GET("/professors/:id", handlers.GetProfessorByID(db))
     return router
 }
 
+func TestGetSubjects(t *testing.T) {
+    db := getTestDB()
+    router := setupRouter(db)
 
+    req, _ := http.NewRequest("GET", "/subjects", nil)
+    w := httptest.NewRecorder()
+    router.ServeHTTP(w, req)
 
+    assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestGetSubjectByID(t *testing.T) {
+    db := getTestDB()
+    router := setupRouter(db)
+
+    // ✅ Cambiá este ID por uno que sepas que existe en tu base
+    req, _ := http.NewRequest("GET", "/subjects/1", nil)
+    w := httptest.NewRecorder()
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, http.StatusOK, w.Code)
+
+    req, _ = http.NewRequest("GET", "/subjects/999", nil)
+    w = httptest.NewRecorder()
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestGetProfessors(t *testing.T) {
+    db := getTestDB()
+    router := setupRouter(db)
+
+    req, _ := http.NewRequest("GET", "/professors", nil)
+    w := httptest.NewRecorder()
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestGetProfessorByID(t *testing.T) {
+    db := getTestDB()
+    router := setupRouter(db)
+
+    // ✅ Cambiá este ID por uno real de tu base
+    req, _ := http.NewRequest("GET", "/professors/1", nil)
+    w := httptest.NewRecorder()
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, http.StatusOK, w.Code)
+
+    req, _ = http.NewRequest("GET", "/professors/9999", nil)
+    w = httptest.NewRecorder()
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, http.StatusNotFound, w.Code)
+}
