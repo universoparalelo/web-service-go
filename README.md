@@ -1,4 +1,6 @@
-[![Go](https://github.com/universoparalelo/web-service-go/actions/workflows/go.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/go.yml)
+[![Build and Test](https://github.com/universoparalelo/web-service-go/actions/workflows/go.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/go.yml)
+
+[![Release](https://github.com/universoparalelo/web-service-go/actions/workflows/release.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/release.yml)
 
 # Web Service API - Materias y Profesores
 
