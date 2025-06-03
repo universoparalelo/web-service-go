@@ -38,5 +38,10 @@ func main() {
 	r.GET("/professors", handlers.GetAllProfessors(DB))
 	r.GET("/professors/:id", handlers.GetProfessorByID(DB))
 
-	r.Run(":8081")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081" // por si ejecutás localmente
+	}
+	r.Run(":" + port)
+
 }
