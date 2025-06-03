@@ -36,5 +36,5 @@ func main() {
     r.GET("/professors", handlers.GetAllProfessors(DB))
     r.GET("/professors/:id", handlers.GetProfessorByID(DB))
 
-    r.Run(":8080")
+    r.Run(":8081")
 }
