@@ -36,7 +36,7 @@ jobs:
       - name: Build
         run: |
           mkdir -p dist
-          go build -o dist/myapp ./...
+          go build ./...
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
