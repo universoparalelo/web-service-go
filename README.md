@@ -6,6 +6,9 @@
 
 Este proyecto es una API REST escrita en Go utilizando el framework [Gin](https://gin-gonic.com/) y la base de datos PostgreSQL. Permite gestionar materias y profesores, proporcionando endpoints para crear, consultar y listar información.
 
+🔗 **La aplicación ya está desplegada y puede accederse desde el navegador:**  
+[https://web-service-go.onrender.com](https://web-service-go.onrender.com) 
+
 ## 📚 Funcionalidades
 
 - Listado de materias (`GET /subjects`)
@@ -73,11 +76,15 @@ go test -v ./...
 ```
 
 ## 🚀 Despliegue
-Este proyecto está preparado para integrarse con CI/CD utilizando GitHub Actions. Se recomienda definir la variable DATABASE_URL como Secret del repositorio para evitar exponer credenciales.
+
+Este proyecto está preparado para integrarse con CI/CD utilizando GitHub Actions.
+El proceso de despliegue se realiza automáticamente a Render al hacer un push a la rama principal.
+Se recomienda definir la variable DATABASE_URL como Secret del repositorio para evitar exponer credenciales.
 
 ## 📌 Notas
-Se recomienda evitar correr pruebas sobre la base de datos de producción.
-Si agregás campos nuevos a las entidades, recordá actualizar tanto los handlers como los tests.
+
+- Se recomienda evitar correr pruebas sobre la base de datos de producción.
+- Si agregás campos nuevos a las entidades, recordá actualizar tanto los handlers como los tests.
 
 ## 📧 Contacto
 
