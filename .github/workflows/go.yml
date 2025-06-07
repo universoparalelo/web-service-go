@@ -104,4 +104,17 @@ jobs:
           \"text\": \"🔔 *Push detectado en GitHub*\n👤 Autor: ${COMMIT_AUTHOR}\n🕒 Hora: ${COMMIT_TIME}\n🌿 Rama: ${BRANCH}\n✉️ Commit: ${COMMIT_MSG}\n📦 SHA: ${COMMIT_SHA}\n✅ Estado del Job: ${STATUS}\"
         }"
         curl -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"
+  
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Trigger deploy in Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          curl -X POST "https://api.render.com/deploy/srv-d0vnu33ipnbc738427t0" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json"
 
