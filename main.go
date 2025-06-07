@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
-
+	"fmt"
 	"example/web-service-gin/handlers"
 
 	"github.com/gin-gonic/gin"
