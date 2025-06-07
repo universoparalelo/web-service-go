@@ -20,7 +20,7 @@ var testDBConnString string
 func TestMain(m *testing.M) {
 	_ = godotenv.Load()
 
-	testDBConnString = os.Getenv("DATABASE_UR")
+	testDBConnString = os.Getenv("DATABASE_URL")
 	if testDBConnString == "" {
 		log.Fatal("DATABASE_URL no está definido en el entorno")
 	}
