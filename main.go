@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
+	"example/web-service-gin/handlers"
 	"log"
 	"os"
-	"fmt"
-	"example/web-service-gin/handlers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
