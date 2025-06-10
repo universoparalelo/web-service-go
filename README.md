@@ -24,6 +24,8 @@ Este proyecto es una API REST escrita en Go utilizando el framework [Gin](https:
 - [pgx](https://github.com/jackc/pgx) para la conexión a la base de datos
 - [Testify](https://github.com/stretchr/testify) para los tests
 - [GitHub Actions](https://docs.github.com/actions) para CI/CD
+- [Render](https://onrender.com) para despliegue
+- [Docker](https://docker.com) para contener la aplicacion
 
 ## 📁 Estructura del Proyecto
 
