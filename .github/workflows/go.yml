@@ -18,35 +18,8 @@ jobs:
         with:
           access_token: ${{ secrets.GH_TOKEN }}
 
-  lint:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.24'
-
-      - name: Download dependencies
-        run: |
-          go mod download
-          go mod tidy
-
-      - name: Run go fmt
-        run: go fmt ./...
-
-      - name: Run go vet
-        run: go vet ./...
-
-      - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@latest
-
-      - name: Run staticcheck
-        run: staticcheck ./...
-
-  build:
-    needs: [avoidant_redundancy, lint]
+  lint-build-test:
+    needs: [avoidant_redundancy]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -55,12 +28,19 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.24'
+    
+    - name: Run go fmt
+      run: go fmt ./...
 
-    - name: Download dependencies
-      run: |
-        go mod download
-        go mod tidy
+    - name: Run go vet
+      run: go vet ./...
 
+    - name: Install staticcheck
+      run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Run staticcheck
+      run: staticcheck ./...
+    
     - name: Build
       run: |
         mkdir -p dist
@@ -71,18 +51,7 @@ jobs:
         name: dist
         path: dist
 
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
-
-    - name: Cargar variables de entorno
+    - name: Cargar variables de entorno para test
       run: |
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 
@@ -106,7 +75,7 @@ jobs:
         curl -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"
   
   docker:
-    needs: [test]
+    needs: [lint-build-test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -123,11 +92,11 @@ jobs:
   
   
   deploy:
-    needs: [test]
+    needs: [docker]
     runs-on: ubuntu-latest
     if: success()
     steps:
       - name: Trigger Render deploy hook
         run: |
-          curl -X POST https://api.render.com/deploy/srv-d1463efdiees73atec10?key=F8IPhtF63ZE  # reemplazá con tu deploy hook URL
+          curl -X POST https://api.render.com/deploy/srv-d1463efdiees73atec10?key=F8IPhtF63ZE 
 
