@@ -64,7 +64,7 @@ jobs:
     - name: Build
       run: |
         mkdir -p dist
-        go build ./...
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o app .
     
     - uses: actions/upload-artifact@v4
       with: 
