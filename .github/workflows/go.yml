@@ -122,16 +122,12 @@ jobs:
         run: docker push ${{ secrets.DOCKER_USERNAME }}/api-isi:latest
   
   
-  # deploy:
-  #   needs: [test]
-  #   runs-on: ubuntu-latest
-  #   if: success()
-  #   steps:
-  #     - name: Trigger deploy in Render
-  #       env:
-  #         RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-  #       run: |
-  #         curl -X POST "https://api.render.com/v1/services/srv-d0vnu33ipnbc738427t0/deploys" \
-  #           -H "Authorization: Bearer $RENDER_API_KEY" \
-  #           -H "Accept: application/json"
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Trigger Render deploy hook
+        run: |
+          curl -X POST https://api.render.com/deploy/srv-d1463efdiees73atec10?key=F8IPhtF63ZE  # reemplazá con tu deploy hook URL
 
