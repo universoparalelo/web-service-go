@@ -7,7 +7,7 @@
 Este proyecto es una API REST escrita en Go utilizando el framework [Gin](https://gin-gonic.com/) y la base de datos PostgreSQL. Permite gestionar materias y profesores, proporcionando endpoints para crear, consultar y listar información.
 
 🔗 **La aplicación ya está desplegada y puede accederse desde el navegador:**  
-[https://web-service-go.onrender.com](https://web-service-go.onrender.com) 
+[https://api-isi.onrender.com](https://api-isi.onrender.com) 
 
 ## 📚 Funcionalidades
 
