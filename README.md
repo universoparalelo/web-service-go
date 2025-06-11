@@ -41,7 +41,28 @@ web-service-gin/
 ```
 
 
-## 🛠️ Configuración
+## Como podes utilizar el proyecto?
+
+### Utilizar los endpoint directamente
+
+1. Obtener todas las materias (sin especificar las materias que se necesitan tener cursadas o aprobadas)
+```bash
+https://api-isi.onrender.com/subjects
+```
+2. Obtener una materia segun ID (especificada las materias que se necesitan tener cursadas o aprobadas)
+```bash
+https://api-isi.onrender.com/subjects/25
+```
+3. Obtener todos los profesores (ficticios)
+```bash
+https://api-isi.onrender.com/professors
+```
+4. Obtener un profesor (incluida la materia que dictan)
+```bash
+https://api-isi.onrender.com/professors/2
+```
+
+### Clonarlo y personalizarlo
 
 1. Clonar el repositorio:
 ```bash
@@ -49,23 +70,35 @@ git clone https://github.com/tu_usuario/web-service-gin.git
 cd web-service-gin
 ```
 
-2. Crear el archivo .env con la URL de tu base de datos:
+2. Instalar las dependencias:
+```
+go mod tidy
+```
+
+3. Debes crear un proyecto en NeonDB (recomendado) y obtener el string de connection
+
+4. Crear el archivo .env con la URL de tu base de datos:
 
 ```
 DATABASE_URL=postgres://usuario:password@localhost:5432/tu_base_de_datos
 ```
 
-3. Instalar las dependencias:
+5. Cargar las estructuras de las tablas + datos -> definitionOfDB.sql
 
-```
-go mod tidy
-```
-
-4. Ejecutar la aplicación:
+6. Ejecutar la aplicación:
 
 ```
 go run main.go
 ```
+
+### Utilizar la imagen en docker hub
+
+1. Descargar la imagen (ya debes tener instalado docker en tu maquina)
+```
+docker pull cele618/api-isi:latest
+```
+
+2. Debes definir tu archivo para conectar con la base de datos sigue con los pasos para [Clonarlo y personalizarlo](#clonarlo-y-personalizarlo)
 
 ## 🧪 Pruebas
 
