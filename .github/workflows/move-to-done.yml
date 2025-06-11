@@ -1,0 +1,44 @@
+name: Move Trello Card to Done on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trello-done:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout completo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Procesar tarjeta Trello al hacer merge
+        run: |
+          # Obtener la URL de la tarjeta desde el último commit
+          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
+          if [ -n "$CARD_URL" ]; then
+            CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
+            COMMIT_MSG=$(git log -1 --pretty=%s)
+            AUTHOR=$(git log -1 --pretty="%an")
+            COMMENT="✅ Merge a main: $COMMIT_MSG — Autor: $AUTHOR"
+
+            # Agregar comentario
+            curl -s -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
+              -d "key=$TRELLO_API_KEY" \
+              -d "token=$TRELLO_TOKEN" \
+              -d "text=$COMMENT"
+
+            # Mover tarjeta a Done
+            curl -s -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
+              -d "idList=$TRELLO_LIST_ID_DONE" \
+              -d "key=$TRELLO_API_KEY" \
+              -d "token=$TRELLO_TOKEN"
+          else
+            echo "No Trello card found in commit message"
+          fi
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          TRELLO_LIST_ID_DONE: ${{ secrets.TRELLO_LIST_ID_DONE }}

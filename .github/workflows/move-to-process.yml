@@ -2,7 +2,7 @@ name: Track Trello Card on Push
 
 on:
   push:
-    branches: [main]
+    branches: [feature/*]
 
 jobs:
   update-trello:
