@@ -1,0 +1,29 @@
+name: Track Trello Card on Push
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update-trello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Trello card ID and comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+        run: |
+          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
+          if [ -n "$CARD_URL" ]; then
+            CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
+            COMMIT_MSG=$(git log -1 --pretty=%s)
+            AUTHOR=$(git log -1 --pretty="%an")
+            COMMENT="💡 Commit: $COMMIT_MSG — Autor: $AUTHOR"
+            curl -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
+              -d "key=$TRELLO_API_KEY" \
+              -d "token=$TRELLO_TOKEN" \
+              -d "text=$COMMENT"
+          else
+            echo "No Trello card found in commit message"
+          fi
