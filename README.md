@@ -114,7 +114,8 @@ go test -v ./...
 
 Este proyecto está preparado para integrarse con CI/CD utilizando GitHub Actions.
 El proceso de despliegue se realiza automáticamente a Render al hacer un push a la rama principal.
-Se recomienda definir la variable DATABASE_URL como Secret del repositorio para evitar exponer credenciales.
+Se recomienda definir la variable DATABASE_URL como Secret del repositorio para evitar exponer credenciales. 
+En el workflow se detallan muchas otras variables que pueden estar en secreto, recomendamos borrar los flujos que no se necesiten para tu proyecto o podes esperar que subamos los pasos para implementar este CI.
 
 ## 📌 Notas
 
