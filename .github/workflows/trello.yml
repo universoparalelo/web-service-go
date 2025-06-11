@@ -8,11 +8,12 @@ jobs:
   update-trello:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract Trello card ID and comment
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
-          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      - name: Checkout con historial completo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Añadir comentario a la tarjeta Trello
         run: |
           CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
           if [ -n "$CARD_URL" ]; then
@@ -27,3 +28,23 @@ jobs:
           else
             echo "No Trello card found in commit message"
           fi
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+
+      - name: Mover tarjeta a 'En proceso'
+        run: |
+          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
+          if [ -n "$CARD_URL" ]; then
+            CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
+            curl -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
+              -d "idList=$TRELLO_LIST_ID_EN_PROCESO" \
+              -d "key=$TRELLO_API_KEY" \
+              -d "token=$TRELLO_TOKEN"
+          else
+            echo "No Trello card found in commit message"
+          fi
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          TRELLO_LIST_ID_EN_PROCESO: ${{ secrets.TRELLO_LIST_ID_EN_PROCESO }}
