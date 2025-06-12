@@ -1,13 +1,8 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Merges on Main Branch
+name: Feature Branches
 
 on:
   push:
-    branches: [ "main"]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "feature/*" ]
 
 jobs:
   avoidant_redundancy:
@@ -18,17 +13,7 @@ jobs:
         with:
           access_token: ${{ secrets.GH_TOKEN }}
   
-      - name: Verificar si fue un merge commit
-        run: |
-          PARENTS=$(git log -1 --pretty=%P)
-          COUNT=$(echo "$PARENTS" | wc -w)
-          if [ "$COUNT" -lt 2 ]; then
-            echo "❌ El commit no es un merge. Abortando workflow."
-            exit 1
-          fi
-
   validar-feature:
-    needs: avoidant_redundancy
     if: startsWith(github.ref, 'refs/heads/feature/')
     runs-on: ubuntu-latest
     steps:
@@ -46,40 +31,31 @@ jobs:
           fi
         # Esto frena el workflow si no hay tarjeta.
 
-  mover-a-done:
-    if: github.ref == 'refs/heads/main'
-    needs: validar-feature
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout completo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Mover tarjeta a Done
+      - name: Agregar comentario a la tarjeta
         run: |
           CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
-          if [ -n "$CARD_URL" ]; then
-            CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
-            COMMIT_MSG=$(git log -1 --pretty=%s)
-            AUTHOR=$(git log -1 --pretty="%an")
-            COMMENT="✅ Merge a main: $COMMIT_MSG — Autor: $AUTHOR"
-            curl -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
-              -d "key=$TRELLO_API_KEY" \
-              -d "token=$TRELLO_TOKEN" \
-              -d "text=$COMMENT"
-            curl -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
-              -d "idList=$TRELLO_LIST_ID_DONE" \
-              -d "key=$TRELLO_API_KEY" \
-              -d "token=$TRELLO_TOKEN"
-          else
-            echo "No Trello card found in commit message"
-            exit 1
-          fi
+          CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          AUTHOR=$(git log -1 --pretty="%an")
+          COMMENT="💡 Commit en feature: $COMMIT_MSG — Autor: $AUTHOR"
+          curl -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
+            -d "key=$TRELLO_API_KEY" \
+            -d "token=$TRELLO_TOKEN" \
+            -d "text=$COMMENT"
         env:
           TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
           TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
-          TRELLO_LIST_ID_DONE: ${{ secrets.TRELLO_LIST_ID_DONE }}
+
+      - name: Mover tarjeta a En proceso
+        run: |
+          curl -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
+            -d "idList=$TRELLO_LIST_ID_EN_PROCESO" \
+            -d "key=$TRELLO_API_KEY" \
+            -d "token=$TRELLO_TOKEN"
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          TRELLO_LIST_ID_EN_PROCESO: ${{ secrets.TRELLO_LIST_ID_EN_PROCESO }}
 
   lint-build-test:
     needs: [avoidant_redundancy, validar-feature]
@@ -150,4 +126,3 @@ jobs:
       - name: Trigger Render deploy hook
         run: |
           curl -X POST https://api.render.com/deploy/srv-d1463efdiees73atec10?key=F8IPhtF63ZE 
-
