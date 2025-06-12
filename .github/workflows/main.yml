@@ -40,7 +40,7 @@ jobs:
 
       - name: Validar que haya una URL de Trello
         run: |
-          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
+          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+' || true)
           if [ -z "$CARD_URL" ]; then
             echo "❌ No hay una URL de tarjeta Trello en el commit. Abortando."
             exit 1
