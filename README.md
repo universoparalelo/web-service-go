@@ -1,6 +1,6 @@
-[![Build and Test](https://github.com/universoparalelo/web-service-go/actions/workflows/go.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/go.yml)
+[![Feature Branches](https://github.com/universoparalelo/web-service-go/actions/workflows/feature.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/feature.yml)
 
-[![Release](https://github.com/universoparalelo/web-service-go/actions/workflows/release.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/release.yml)
+[![Merges on Main Branch](https://github.com/universoparalelo/web-service-go/actions/workflows/main.yml/badge.svg)](https://github.com/universoparalelo/web-service-go/actions/workflows/main.yml)
 
 # Web Service API - Materias y Profesores
 
