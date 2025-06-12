@@ -29,27 +29,22 @@ jobs:
       with:
         go-version: '1.24'
     
-    - name: Run go fmt
-      run: go fmt ./...
-
-    - name: Run go vet
-      run: go vet ./...
-
-    - name: Install staticcheck
-      run: go install honnef.co/go/tools/cmd/staticcheck@latest
-
-    - name: Run staticcheck
-      run: staticcheck ./...
+    - name: Golint
+      run: 
+        go fmt ./...
+        go vet ./...
+        go install honnef.co/go/tools/cmd/staticcheck@latest
+        staticcheck ./...
     
     - name: Build
       run: |
         mkdir -p dist
         GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o app .
     
-    - uses: actions/upload-artifact@v4
-      with: 
-        name: dist
-        path: dist
+    # - uses: actions/upload-artifact@v4
+    #   with: 
+    #     name: dist
+    #     path: dist
 
     - name: Cargar variables de entorno para test
       run: |
@@ -59,18 +54,17 @@ jobs:
       run: go test -v 
 
     - name: Send Slack Notification
-      if: always()
+      if: failure()
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
         STATUS="${{ job.status }}"
-        COMMIT_SHA="${{ github.sha }}"
         COMMIT_MSG="${{ github.event.head_commit.message }}"
         COMMIT_AUTHOR="${{ github.event.head_commit.author.name }}"
         COMMIT_TIME="${{ github.event.head_commit.timestamp }}"
         BRANCH="${{ github.ref_name }}"
         PAYLOAD="{
-          \"text\": \"🔔 *Push detectado en GitHub*\n👤 Autor: ${COMMIT_AUTHOR}\n🕒 Hora: ${COMMIT_TIME}\n🌿 Rama: ${BRANCH}\n✉️ Commit: ${COMMIT_MSG}\n📦 SHA: ${COMMIT_SHA}\n✅ Estado del Job: ${STATUS}\"
+          \"text\": \"🔔 *Push detectado en GitHub*\n👤 Autor: ${COMMIT_AUTHOR}\n🕒 Hora: ${COMMIT_TIME}\n🌿 Rama: ${BRANCH}\n✉️ Commit: ${COMMIT_MSG}\n\n❌ Estado del Job: ${STATUS}\"
         }"
         curl -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"
   
