@@ -48,10 +48,16 @@ jobs:
 
       - name: Mover tarjeta a En proceso
         run: |
-          curl -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
-            -d "idList=$TRELLO_LIST_ID_EN_PROCESO" \
-            -d "key=$TRELLO_API_KEY" \
-            -d "token=$TRELLO_TOKEN"
+          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
+          if [ -n "$CARD_URL" ]; then
+            CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
+            curl -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
+              -d "idList=$TRELLO_LIST_ID_EN_PROCESO" \
+              -d "key=$TRELLO_API_KEY" \
+              -d "token=$TRELLO_TOKEN"
+          else
+            echo "No Trello card found in commit message"
+          fi
         env:
           TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
           TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
