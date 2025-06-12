@@ -120,6 +120,7 @@ En el workflow se detallan muchas otras variables que pueden estar en secreto, r
 - GH_GITHUB: token de github
 - RENDER_TOKEN: token de render
 - TRELLO_TOKEN: token de trello
+- DOCKER_TOKEN: token de docker
 
 ## 📌 Notas
 
