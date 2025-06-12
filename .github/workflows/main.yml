@@ -21,7 +21,7 @@ jobs:
 
   validar-feature:
     needs: avoidant_redundancy
-    if: startsWith(github.ref, 'refs/heads/feature/')
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout completo
@@ -48,7 +48,6 @@ jobs:
         # Esto frena el workflow si no hay tarjeta.
 
   mover-a-done:
-    if: github.ref == 'refs/heads/main'
     needs: validar-feature
     runs-on: ubuntu-latest
     steps:
