@@ -117,6 +117,7 @@ El proceso de despliegue se realiza automáticamente a Render al hacer un push a
 Se recomienda definir la variable DATABASE_URL como Secret del repositorio para evitar exponer credenciales. 
 En el workflow se detallan muchas otras variables que pueden estar en secreto, recomendamos borrar los flujos que no se necesiten para tu proyecto o podes esperar que subamos los pasos para implementar este CI.
 - DATABASE_URL: string de conexion con la base de datos
+- GH_GITHUB: token de github
 
 ## 📌 Notas
 
