@@ -17,15 +17,7 @@ jobs:
         uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ secrets.GH_TOKEN }}
-  
-      - name: Verificar si fue un merge commit
-        run: |
-          PARENTS=$(git log -1 --pretty=%P)
-          COUNT=$(echo "$PARENTS" | wc -w)
-          if [ "$COUNT" -lt 2 ]; then
-            echo "❌ El commit no es un merge. Abortando workflow."
-            exit 1
-          fi
+
 
   validar-feature:
     needs: avoidant_redundancy
@@ -36,6 +28,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
+      - name: Verificar si fue un merge commit
+        run: |
+          PARENTS=$(git log -1 --pretty=%P)
+          COUNT=$(echo "$PARENTS" | wc -w)
+          if [ "$COUNT" -lt 2 ]; then
+            echo "❌ El commit no es un merge. Abortando workflow."
+            exit 1
+          fi
 
       - name: Validar que haya una URL de Trello
         run: |
