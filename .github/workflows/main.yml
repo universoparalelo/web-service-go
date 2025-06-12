@@ -20,7 +20,6 @@ jobs:
           access_token: ${{ secrets.GH_TOKEN }}
 
   validar-feature:
-    needs: avoidant_redundancy
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
