@@ -58,7 +58,7 @@ jobs:
 
       - name: Mover tarjeta a Done
         run: |
-          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+')
+          CARD_URL=$(git log -1 --pretty=%B | grep -o 'https://trello.com/c/[a-zA-Z0-9]\+' || true)
           if [ -n "$CARD_URL" ]; then
             CARD_ID=$(echo "$CARD_URL" | cut -d '/' -f5)
             COMMIT_MSG=$(git log -1 --pretty=%s)
