@@ -14,7 +14,7 @@ import (
 var DB *pgx.Conn
 
 func main() {
-	var i = 0
+	var i = 2
 	_ = godotenv.Load() // no falla si no existe
 
 	connStr := os.Getenv("DATABASE_URL")
