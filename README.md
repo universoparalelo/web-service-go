@@ -122,6 +122,8 @@ En el workflow se detallan muchas otras variables que pueden estar en secreto, r
 - TRELLO_TOKEN: token de trello
 - DOCKER_TOKEN: token de docker
 - TRELLO_ID_DONE: id de la tabla del done
+- TRELLO_ID_EN_PROCESO: id de la tabla de en proceso
+
 
 ## 📌 Notas
 
