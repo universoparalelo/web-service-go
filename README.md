@@ -124,6 +124,7 @@ En el workflow se detallan muchas otras variables que pueden estar en secreto, r
 - DOCKER_ID: id de la imagen
 - TRELLO_ID_DONE: id de la tabla del done
 - TRELLO_ID_EN_PROCESO: id de la tabla de en proceso
+- TRELLO_TOKEN: token para trello
 
 
 ## 📌 Notas
