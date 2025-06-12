@@ -114,28 +114,16 @@ jobs:
         }"
         curl -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"
   
-  docker:
-    needs: [lint-build-test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/api-isi:latest .
-
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/api-isi:latest
-  
   deploy:
-    needs: [docker]
+    needs: [lint-build-test]
     runs-on: ubuntu-latest
     if: success()
     steps:
-      - name: Trigger Render deploy hook
+      - name: Trigger deploy in Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST https://api.render.com/deploy/srv-d1463efdiees73atec10?key=F8IPhtF63ZE 
+          curl -X POST "https://api.render.com/deploy/srv-d0vnu33ipnbc738427t0" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Accept: application/json"
 
