@@ -110,15 +110,15 @@ Para correr los tests:
 go test -v ./...
 ```
 
-## 🚀 Despliegue
+## 🚀 Consideraciones
 
 Este proyecto está preparado para integrarse con CI/CD utilizando GitHub Actions.
 El proceso de despliegue se realiza automáticamente a Render al hacer un push a la rama principal.
-Se recomienda definir la variable DATABASE_URL como Secret del repositorio para evitar exponer credenciales. 
-En el workflow se detallan muchas otras variables que pueden estar en secreto, recomendamos borrar los flujos que no se necesiten para tu proyecto o podes esperar que subamos los pasos para implementar este CI.
+Se recomienda definir las siguientes variables secreto en el repositorio clonado de github.
 - DATABASE_URL: string de conexion con la base de datos
 - GH_GITHUB: token de github
-- RENDER_TOKEN: token de render
+- RENDER_TOKEN: token de Render
+- RENDER_ID: token del proyecto de Render
 - TRELLO_TOKEN: token de trello
 - DOCKER_TOKEN: token de docker
 - DOCKER_ID: id de la imagen
@@ -126,9 +126,9 @@ En el workflow se detallan muchas otras variables que pueden estar en secreto, r
 - TRELLO_ID_EN_PROCESO: id de la tabla de en proceso
 - TRELLO_TOKEN: token para trello
 
-
 ## 📌 Notas
 
+- Si no queres incluir algun servicio podes eliminar el trabajo del workflow. 
 - Se recomienda evitar correr pruebas sobre la base de datos de producción.
 - Si agregás campos nuevos a las entidades, recordá actualizar tanto los handlers como los tests.
 
